@@ -1,0 +1,9 @@
+.popover {
+    position: absolute;
+    top: 110%;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 8px;
+    z-index: 10;
+}
