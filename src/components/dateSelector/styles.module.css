@@ -1,9 +1,36 @@
-.popover {
-    position: absolute;
-    top: 110%;
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
-    border-radius: 12px;
-    padding: 8px;
-    z-index: 10;
+.dateSelector {
+    & button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem;
+        cursor: pointer;
+        background-color: inherit;
+        border: 1px solid #31323d;
+        border-radius: 0.5rem;
+
+        & span {
+            padding: 0 0.5rem;
+            color: var(--content-secondary);
+        }
+    }
+
+    & .popover {
+        position: fixed;
+        inset: 0;
+        z-index: 12;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(0.5rem);
+        -webkit-backdrop-filter: blur(0.5rem);
+
+        & .calendar {
+            padding: 1.25rem;
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    }
 }
