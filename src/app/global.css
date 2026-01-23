@@ -2,6 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    transition: 0.3s;
 }
 
 :root {
@@ -28,14 +29,25 @@
     --accent-orange: #F09102;
     --accent-orange-light: #75501B;
 
-    --text-lg: 16px;
-    --text-md: 14px;
-    --text-sm: 12px;
+    --text-xxl: 1.25rem;
+    --text-xl: 1.125rem;
+    --text-lg: 1rem;
+    --text-md: 0.875rem;
+    --text-sm: 0.75rem;
 
-    --line-height-md: 24px;
-    --line-height-sm: 16px;
+    --line-height-lg: 2rem;
+    --line-height-md: 1.5rem;
+    --line-height-sm: 1rem;
 
     --weight-md: 700;
     --weight-sm: 500;
+
+    --title: var(--weight-md) 1.5rem/var(--line-height-lg) 'Inter Tight', sans-serif;
+
+    --paragraph-md: var(--weight-sm) var(--text-md)/var(--line-height-md) 'Inter', sans-serif;
+    --paragraph-sm: var(--weight-sm) var(--text-sm)/var(--line-height-sm) 'Inter', sans-serif;
+
+    --label-lg: var(--weight-md) var(--text-lg)/var(--line-height-md) 'Inter', sans-serif;
+    --label-md: var(--weight-md) var(--text-md)/var(--line-height-md) 'Inter', sans-serif;
 
 }
