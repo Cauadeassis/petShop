@@ -3,6 +3,8 @@ import CloudSun from "../../icons/cloudSun.svg"
 import Moon from "../../icons/moon.svg"
 import Image from "next/image"
 
+import styles from "./styles.module.css"
+
 export const ICONS = {
     FogSun,
     CloudSun,
@@ -15,26 +17,26 @@ interface PeriodSectionProps {
     time: string;
 }
 
-export default function PeriodSection({ icon, periodName, time }) {
+export default function PeriodSection({ icon, periodName, time }: PeriodSectionProps) {
     return (
-        <section>
+        <section className={styles.periodSection}>
             <div>
-                <span className="iconContainer">
-                    <Image src={ICONS[icon]} alt="Ícone do período" width={24} height={24} />
+                <span className={styles.periodContainer}>
+                    <Image src={ICONS[icon]} alt="Ícone do período" width={20} height={20} />
+                    <h2>{periodName}</h2>
                 </span>
-                <h2>{periodName}</h2>
-                <span className="timeContainer">{time}</span>
+                <span className={styles.timeContainer}>{time}</span>
             </div>
             <table>
                 <tbody>
                     <tr>
-                        <td className="time">09:00</td>
-                        <td className="pet-owner">
+                        <td className={styles.time}>09:00</td>
+                        <td className={styles.petOwner}>
                             <strong>Thor</strong>
                             <span> / Fernanda Costa</span>
                         </td>
-                        <td className="service">Vacinação</td>
-                        <td className="remove-button">Remover agendamento</td>
+                        <td className={styles.service}>Vacinação</td>
+                        <td className={styles.removeButton}>Remover agendamento</td>
                     </tr>
                 </tbody>
             </table>

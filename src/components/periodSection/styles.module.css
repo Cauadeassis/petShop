@@ -1,0 +1,91 @@
+.periodSection {
+    width: 100%;
+    margin: 0.75rem 0;
+    background-color: var(--background-tertiary);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px var(--background-tertiary);
+
+    &>div {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1.25rem;
+        border-bottom: 1px solid #31323d;
+
+        & .periodContainer {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+
+            & h2 {
+                color: var(--content-primary);
+                font: var(--label-lg);
+            }
+        }
+
+        & .timeContainer {
+            color: var(--content-secondary);
+            font: var(--label-lg);
+        }
+    }
+
+    & table {
+        padding: 1.25rem;
+
+        @media (max-width: 756px) {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        & tr {
+            display: flex;
+            align-items: center;
+            gap: 3.1rem;
+
+            @media (max-width: 756px) {
+                width: 100%;
+                flex-direction: column;
+                justify-content: center;
+                gap: 2rem;
+            }
+
+            & td {
+                text-align: center;
+                color: var(--content-secondary);
+                font: var(--paragraph-sm);
+
+                @media (max-width: 756px) {
+                    width: 100%;
+                    font-size: var(--text-xl);
+                    line-height: var(--line-height-md);
+                }
+            }
+
+            & .time {
+                color: var(--content-primary);
+                font: var(--label-md);
+
+                @media (max-width: 756px) {
+                    font-size: var(--text-xxl);
+                }
+            }
+
+            & .removeButton {
+                cursor: pointer;
+                color: var(--content-tertiary);
+                transition: 0.5s;
+
+                &:hover {
+                    color: var(--content-primary);
+                    text-decoration: underline;
+                    transform: scale(1.03);
+                }
+            }
+
+            & strong {
+                color: var(--content-primary);
+                font-weight: var(--weight-md);
+            }
+        }
+    }
+}
