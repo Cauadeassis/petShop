@@ -1,4 +1,5 @@
-import { inter, interTight } from "./fonts"
+import { inter, interTight } from "./fonts";
+import "./global.css";
 
 import type { Metadata } from "next";
 
