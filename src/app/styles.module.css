@@ -122,7 +122,6 @@
             flex-direction: column;
             justify-content: center;
             width: min(50%, 500px);
-            min-height: 100vh;
             margin: auto;
             padding: 2.5rem;
             background-color: var(--background-tertiary);
