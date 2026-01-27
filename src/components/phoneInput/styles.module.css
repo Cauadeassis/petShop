@@ -1,0 +1,20 @@
+.inputWrapper {
+    position: relative;
+    width: 100%;
+
+    & .inputIcon {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        z-index: 1;
+        left: 0.75rem;
+    }
+
+    & input {
+        width: 100%;
+        padding-left: 2.5rem !important;
+        /* Usado para sobescrever o padding normal do input */
+        position: relative;
+    }
+}

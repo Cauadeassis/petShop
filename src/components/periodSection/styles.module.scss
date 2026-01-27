@@ -1,11 +1,13 @@
+@import "../../styles/mixins";
+
 .periodSection {
     width: 100%;
     margin: 0.75rem 0;
     background-color: var(--background-tertiary);
-    border-radius: 10px;
-    box-shadow: 0 2px 8px var(--background-tertiary);
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 0.5rem var(--background-tertiary);
 
-    &>div {
+    & .periodHeader {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -23,7 +25,7 @@
             }
         }
 
-        & .timeContainer {
+        & .hourContainer {
             color: var(--content-secondary);
             font: var(--label-lg);
         }
@@ -32,7 +34,7 @@
     & table {
         padding: 1.25rem;
 
-        @media (max-width: 756px) {
+        @include tablet {
             width: 100%;
             margin: 0 auto;
         }
@@ -42,7 +44,7 @@
             align-items: center;
             gap: 3.1rem;
 
-            @media (max-width: 756px) {
+            @include tablet {
                 width: 100%;
                 flex-direction: column;
                 justify-content: center;
@@ -54,23 +56,25 @@
                 color: var(--content-secondary);
                 font: var(--paragraph-sm);
 
-                @media (max-width: 756px) {
+                @include tablet {
                     width: 100%;
                     font-size: var(--text-xl);
                     line-height: var(--line-height-md);
                 }
             }
 
-            & .time {
+            & .hour {
                 color: var(--content-primary);
                 font: var(--label-md);
 
-                @media (max-width: 756px) {
+                @include tablet {
                     font-size: var(--text-xxl);
                 }
             }
 
-            & .removeButton {
+            & button {
+                background-color: transparent;
+                border: none;
                 cursor: pointer;
                 color: var(--content-tertiary);
                 transition: 0.5s;
@@ -87,5 +91,12 @@
                 font-weight: var(--weight-md);
             }
         }
+    }
+
+    & .emptyState {
+        color: var(--content-secondary);
+        font: var(--paragraph-md);
+        text-align: center;
+        padding: 1.25rem;
     }
 }

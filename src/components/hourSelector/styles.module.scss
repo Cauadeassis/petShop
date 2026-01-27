@@ -1,0 +1,13 @@
+@import "../../styles/mixins";
+
+.selectWrapper {
+    @include inputWrapper;
+
+    & .inputIcon:nth-of-type(1) {
+        left: 0.75rem;
+    }
+
+    & .inputIcon:nth-of-type(2) {
+        right: 0.75rem;
+    }
+}
