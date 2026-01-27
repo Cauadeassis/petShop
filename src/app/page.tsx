@@ -3,57 +3,123 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image"
 import Dog from "../icons/dog.svg"
-import Arrow from "../icons/arrow.svg"
-import Clock from "../icons/clock.svg"
-import CloudSun from "../icons/cloudSun.svg"
-import FogSun from "../icons/fogSun.svg"
-import Moon from "../icons/moon.svg"
 import Paw from "../icons/paw.svg"
-import Phone from "../icons/phone.svg"
 import User from "../icons/user.svg"
-import deleteIcon from "../icons/deleteIcon.svg"
 
 import DateSelector from "../components/dateSelector"
 import PeriodSection from "../components/periodSection"
+import PhoneInput from "../components/phoneInput"
+import HourSelector from "../components/hourSelector"
+import { getPeriod, Period, periodRanges } from "../utils/periods";
 
-import styles from "./styles.module.css"
+import styles from "./styles.module.scss"
 
-function generateHours(start = 9, end = 21): string[] {
-    const hours: string[] = [];
-    for (let hour = start; hour <= end; hour++) {
-        hours.push(`${String(hour).padStart(2, "0")}:00`);
-    }
-
-    return hours;
-}
+import { Appointment } from "../types"
 
 export default function Petshop() {
     const today = new Date();
     const [formDate, setFormDate] = useState<Date>(today);
-    const [day, setDay] = useState<Date>(today);
-    const [time, setTime] = useState("");
+    const [date, setDate] = useState<Date>(today);
+    const [hour, setHour] = useState("");
     const [isScheduling, setIsScheduling] = useState(false);
     const popoverRef = useRef<HTMLDivElement>(null);
 
+    const [tutorName, setTutorName] = useState("");
+    const [petName, setPetName] = useState("");
+    const [phone, setPhone] = useState("");
+    const [service, setService] = useState("");
+    const [allAppointments, setAllAppointments] = useState<Appointment[]>([]);
+    const [currentAppointments, setCurrentAppointments] = useState<Appointment[]>([]);
+
+    const [morningAppointments, setMorningAppointments] = useState<Appointment[]>([])
+    const [afternoonAppointments, setAfternoonAppointments] = useState<Appointment[]>([])
+    const [eveningAppointments, setEveningAppointments] = useState<Appointment[]>([])
+
+    const resetForm = () => {
+        setTutorName("");
+        setPetName("");
+        setPhone("");
+        setService("");
+        setFormDate(today);
+        setHour("");
+    };
+
+    const FormIsNotValid = () => {
+        if (!hour) {
+            alert("Por favor, selecione o horário");
+            return true;
+        }
+        return false;
+    };
+
+    const handleSubmit = (event: React.FormEvent) => {
+        event.preventDefault();
+        if (FormIsNotValid()) return
+
+        const newAppointment: Appointment = {
+            id: Date.now().toString(),
+            tutorName,
+            petName,
+            phone,
+            service,
+            date: formDate,
+            hour,
+        };
+
+        setAllAppointments([...allAppointments, newAppointment]);
+        resetForm();
+        setIsScheduling(false);
+    };
+
+    const handleDeleteAppointment = (id: string) => {
+        if (confirm("Deseja realmente excluir este agendamento?")) {
+            setAllAppointments(allAppointments.filter(
+                appointment => appointment.id !== id
+            ));
+        }
+    };
+
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
-            if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+            if (popoverRef.current && !popoverRef.current.contains(event.target as Node))
                 setIsScheduling(false);
-            }
         }
-
-        if (isScheduling) {
-            document.addEventListener("mousedown", handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
+        if (isScheduling) document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isScheduling]);
+
+    useEffect(() => {
+        const filteredByDate = allAppointments.filter(appointment => {
+            const appointmentDate = new Date(appointment.date);
+            return (
+                appointmentDate.getDate() === date.getDate() &&
+                appointmentDate.getMonth() === date.getMonth() &&
+                appointmentDate.getFullYear() === date.getFullYear()
+            );
+        });
+
+        const periodMap: Record<Period, Appointment[]> = {
+            morning: [],
+            afternoon: [],
+            evening: []
+        };
+
+        filteredByDate.forEach(appointment => {
+            const hour = parseInt(appointment.hour.split(':')[0]);
+            const period = getPeriod(hour);
+            if (period) periodMap[period].push(appointment);
+        });
+
+        setCurrentAppointments(filteredByDate);
+        setMorningAppointments(periodMap.morning);
+        setAfternoonAppointments(periodMap.afternoon);
+        setEveningAppointments(periodMap.evening);
+    }, [allAppointments, date]);
+
     return (
         <div className={styles.body}>
             <header>
-                <Image src={Dog} alt="Cachorro" className={styles.logo} width={20} height={20} />
+                <Image src={Dog} alt="Cachorro" className={styles.logo} />
                 <h2>MUNDO PET</h2>
             </header>
             <main>
@@ -63,24 +129,33 @@ export default function Petshop() {
                         <p>Aqui você pode ver todos os clientes e serviços agendados para hoje.</p>
                     </div>
                     <div className={styles.dateContainer}>
-                        <DateSelector />
+                        <DateSelector
+                            value={date}
+                            onChange={setDate}
+                        />
                     </div>
                 </section>
                 <div className={styles.sectionsContainer}>
                     <PeriodSection
                         icon="FogSun"
                         periodName="Manhã"
-                        time="9h-12h"
+                        hour="9h-12h"
+                        appointments={morningAppointments}
+                        onDelete={handleDeleteAppointment}
                     />
                     <PeriodSection
                         icon="CloudSun"
                         periodName="Tarde"
-                        time="13h-18h"
+                        hour="13h-18h"
+                        appointments={afternoonAppointments}
+                        onDelete={handleDeleteAppointment}
                     />
                     <PeriodSection
                         icon="Moon"
                         periodName="Noite"
-                        time="19h-21h"
+                        hour="19h-21h"
+                        appointments={eveningAppointments}
+                        onDelete={handleDeleteAppointment}
                     />
                 </div>
                 <button
@@ -91,68 +166,78 @@ export default function Petshop() {
                         <div className={styles.modalContainer} ref={popoverRef}>
                             <h1>Agende um atendimento</h1>
                             <p>Preencha os dados do cliente para realizar o agendamento:</p>
-                            <form>
+                            <form onSubmit={handleSubmit}>
                                 <section>
                                     <label>Nome do tutor</label>
                                     <div className={styles.inputWrapper}>
-                                        <Image className={styles.inputIcon} src={User} alt="Pessoa" width={20} height={20} />
-                                        <input type="text" placeholder="Helena Souza" />
+                                        <Image
+                                            className={styles.inputIcon}
+                                            src={User} alt="Pessoa"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Helena Souza"
+                                            value={tutorName}
+                                            onChange={(event) => setTutorName(event.target.value)}
+                                            required
+                                        />
                                     </div>
                                 </section>
                                 <section>
                                     <label>Nome do pet</label>
                                     <div className={styles.inputWrapper}>
-                                        <Image className={styles.inputIcon} src={Paw} alt="Paw icon" width={20} height={20} />
-                                        <input type="text" placeholder="Cheddar" />
+                                        <Image
+                                            className={styles.inputIcon}
+                                            src={Paw}
+                                            alt="Paw icon"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Cheddar"
+                                            value={petName}
+                                            onChange={(event) => setPetName(event.target.value)}
+                                            required
+                                        />
                                     </div>
                                 </section>
                                 <section>
                                     <label>Telefone</label>
-                                    <div className={styles.inputWrapper}>
-                                        <Image className={styles.inputIcon} src={Phone} alt="Telefone" width={20} height={20} />
-                                        <input type="tel" placeholder="(00) 0 0000-0000" />
-                                    </div>
+                                    <PhoneInput
+                                        phone={phone}
+                                        onChange={setPhone}
+                                    />
                                 </section>
                                 <section>
                                     <label>Descrição do serviço</label>
-                                    <textarea placeholder="Banho e tosa"></textarea>
+                                    <textarea
+                                        placeholder="Banho e tosa"
+                                        value={service}
+                                        onChange={(event) => setService(event.target.value)}
+                                        required
+                                    ></textarea>
                                 </section>
                                 <div className={styles.formRow}>
                                     <section>
                                         <label>Data</label>
-                                        <div className={styles.dateSelector}>
-                                            <DateSelector value={formDate} onChange={setFormDate} />
-                                        </div>
+                                        <DateSelector
+                                            value={formDate}
+                                            onChange={setFormDate}
+                                        />
                                     </section>
                                     <section>
                                         <label>Hora</label>
-                                        <div className={styles.selectWrapper}>
-                                            <Image className={styles.inputIcon} src={Clock} alt="Relógio" width={20} height={20} />
-                                            <select value={time} onChange={(event) => setTime(event.target.value)}>
-                                                <option value="" disabled>
-                                                    Selecione
-                                                </option>
-                                                {generateHours(9, 21).map((hour) => (
-                                                    <option key={hour} value={hour}>
-                                                        {hour}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <Image className={styles.inputIcon} src={Arrow} alt="Seta" width={20} height={20} />
-                                        </div>
+                                        <HourSelector
+                                            hour={hour}
+                                            onChange={setHour}
+                                        />
                                     </section>
                                 </div>
-                                <button
-                                    type="submit"
-                                    onClick={() => setIsScheduling(false)}
-                                >AGENDAR
-                                </button>
+                                <button type="submit">AGENDAR</button>
                             </form>
                         </div>
                     </div>
-                )
-                }
-            </main >
-        </div >
+                )}
+            </main>
+        </div>
     )
 }
