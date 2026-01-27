@@ -3,6 +3,10 @@
     padding: 0;
     box-sizing: border-box;
     transition: 0.3s;
+    resize: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
 :root {
