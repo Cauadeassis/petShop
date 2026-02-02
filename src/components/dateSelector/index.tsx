@@ -9,15 +9,18 @@ import "react-day-picker/dist/style.css";
 import styles from "./styles.module.css"
 
 interface DateSelectorProps {
-    value?: Date;
-    onChange?: (value: Date) => void;
+    value: Date;
+    onChange: (value: Date) => void;
+}
+
+function normalizeDate(date: Date) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
 export default function DateSelector({ value, onChange }: DateSelectorProps) {
     const [open, setOpen] = useState(false);
     const popoverRef = useRef<HTMLDivElement>(null);
     const today = new Date();
-    const selectedDate = value || undefined;
     const maxDate = new Date();
     maxDate.setDate(today.getDate() + 7);
 
@@ -43,13 +46,13 @@ export default function DateSelector({ value, onChange }: DateSelectorProps) {
                 type="button"
                 onClick={() => setOpen((preview) => !preview)}
             >
-                <Image src={Calendar} alt="Calendário" width={20} height={20} />
+                <Image src={Calendar} alt="Calendário" className={styles.icon} />
                 <span>
-                    {selectedDate
-                        ? format(selectedDate, "dd/MM/yyyy")
+                    {value
+                        ? format(value, "dd/MM/yyyy")
                         : "Selecione"}
                 </span>
-                <Image src={Arrow} alt="Seta" width={20} height={20} />
+                <Image src={Arrow} alt="Seta" className={styles.icon} />
             </button>
 
             {open && (
@@ -57,10 +60,11 @@ export default function DateSelector({ value, onChange }: DateSelectorProps) {
                     <div ref={popoverRef}>
                         <DayPicker
                             mode="single"
-                            selected={selectedDate}
+                            selected={value}
                             onSelect={(day) => {
                                 if (!day) return;
-                                onChange?.(day);
+                                const normalized = normalizeDate(day);
+                                onChange(normalized);
                                 setOpen(false);
                             }}
                             disabled={{ before: today, after: maxDate }}

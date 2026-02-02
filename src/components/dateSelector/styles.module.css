@@ -13,6 +13,11 @@
             padding: 0 0.5rem;
             color: var(--content-secondary);
         }
+
+        & .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
     }
 
     & .popover {
