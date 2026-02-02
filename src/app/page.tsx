@@ -10,11 +10,14 @@ import DateSelector from "../components/dateSelector"
 import PeriodSection from "../components/periodSection"
 import PhoneInput from "../components/phoneInput"
 import HourSelector from "../components/hourSelector"
-import { getPeriod, Period, periodRanges } from "../utils/periods";
+import { getPeriod, Period } from "../utils/periods";
 
 import styles from "./styles.module.scss"
 
 import { Appointment } from "../types"
+import { format } from "date-fns";
+
+import supabase from "@/src/supabase";
 
 export default function Petshop() {
     const today = new Date();
@@ -24,20 +27,19 @@ export default function Petshop() {
     const [isScheduling, setIsScheduling] = useState(false);
     const popoverRef = useRef<HTMLDivElement>(null);
 
-    const [tutorName, setTutorName] = useState("");
-    const [petName, setPetName] = useState("");
+    const [tutor_name, setTutor_name] = useState("");
+    const [pet_name, setPet_name] = useState("");
     const [phone, setPhone] = useState("");
     const [service, setService] = useState("");
     const [allAppointments, setAllAppointments] = useState<Appointment[]>([]);
-    const [currentAppointments, setCurrentAppointments] = useState<Appointment[]>([]);
 
     const [morningAppointments, setMorningAppointments] = useState<Appointment[]>([])
     const [afternoonAppointments, setAfternoonAppointments] = useState<Appointment[]>([])
     const [eveningAppointments, setEveningAppointments] = useState<Appointment[]>([])
 
     const resetForm = () => {
-        setTutorName("");
-        setPetName("");
+        setTutor_name("");
+        setPet_name("");
         setPhone("");
         setService("");
         setFormDate(today);
@@ -52,32 +54,95 @@ export default function Petshop() {
         return false;
     };
 
-    const handleSubmit = (event: React.FormEvent) => {
+    function normalizeDate(date: Date) {
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         if (FormIsNotValid()) return
 
         const newAppointment: Appointment = {
-            id: Date.now().toString(),
-            tutorName,
-            petName,
+            tutor_name,
+            pet_name,
             phone,
             service,
-            date: formDate,
+            date: normalizeDate(formDate),
             hour,
         };
 
-        setAllAppointments([...allAppointments, newAppointment]);
-        resetForm();
-        setIsScheduling(false);
-    };
+        const { data, error } = await supabase
+            .from("appointments")
+            .insert([newAppointment])
+            .select();
 
-    const handleDeleteAppointment = (id: string) => {
-        if (confirm("Deseja realmente excluir este agendamento?")) {
-            setAllAppointments(allAppointments.filter(
-                appointment => appointment.id !== id
-            ));
+        if (error) {
+            console.error("Erro ao criar agendamento:", error);
+            alert("Erro ao criar agendamento!");
+            return;
+        }
+
+        if (data) {
+            resetForm();
+            setIsScheduling(false);
+            setAllAppointments([...allAppointments, newAppointment])
+            console.log("Successful insert!");
+            console.log(allAppointments, newAppointment)
         }
     };
+
+    const handleDeleteAppointment = async (id: string) => {
+        const { error } = await supabase
+            .from("appointments")
+            .delete()
+            .eq("id", id);
+
+        if (error) {
+            console.error("Erro ao deletar agendamento:", error);
+            alert("Erro ao deletar agendamento!");
+            return;
+        }
+
+        setAllAppointments(allAppointments.filter(
+            appointment => appointment.id !== id
+        ));
+        console.log("Successful delete!")
+    };
+
+    useEffect(() => {
+        async function fetchAppointmentsByDate() {
+            const formattedDate = format(date, "yyyy-MM-dd");
+            const { data, error } = await supabase
+                .from("appointments")
+                .select("*")
+                .eq("date", formattedDate);
+
+            if (error) {
+                console.error("Erro ao buscar appointments:", error);
+                return;
+            }
+
+            const periodMap: Record<Period, Appointment[]> = {
+                morning: [],
+                afternoon: [],
+                evening: []
+            };
+
+            if (data) {
+                data.forEach(appointment => {
+                    const hourInt = parseInt(appointment.hour.split(":")[0]);
+                    const period = getPeriod(hourInt);
+                    if (period) periodMap[period].push(appointment);
+                });
+            }
+
+            setMorningAppointments(periodMap.morning);
+            setAfternoonAppointments(periodMap.afternoon);
+            setEveningAppointments(periodMap.evening);
+        }
+
+        fetchAppointmentsByDate();
+    }, [allAppointments, date]);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -87,34 +152,6 @@ export default function Petshop() {
         if (isScheduling) document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isScheduling]);
-
-    useEffect(() => {
-        const filteredByDate = allAppointments.filter(appointment => {
-            const appointmentDate = new Date(appointment.date);
-            return (
-                appointmentDate.getDate() === date.getDate() &&
-                appointmentDate.getMonth() === date.getMonth() &&
-                appointmentDate.getFullYear() === date.getFullYear()
-            );
-        });
-
-        const periodMap: Record<Period, Appointment[]> = {
-            morning: [],
-            afternoon: [],
-            evening: []
-        };
-
-        filteredByDate.forEach(appointment => {
-            const hour = parseInt(appointment.hour.split(':')[0]);
-            const period = getPeriod(hour);
-            if (period) periodMap[period].push(appointment);
-        });
-
-        setCurrentAppointments(filteredByDate);
-        setMorningAppointments(periodMap.morning);
-        setAfternoonAppointments(periodMap.afternoon);
-        setEveningAppointments(periodMap.evening);
-    }, [allAppointments, date]);
 
     return (
         <div className={styles.body}>
@@ -137,23 +174,17 @@ export default function Petshop() {
                 </section>
                 <div className={styles.sectionsContainer}>
                     <PeriodSection
-                        icon="FogSun"
-                        periodName="Manhã"
-                        hour="9h-12h"
+                        period="morning"
                         appointments={morningAppointments}
                         onDelete={handleDeleteAppointment}
                     />
                     <PeriodSection
-                        icon="CloudSun"
-                        periodName="Tarde"
-                        hour="13h-18h"
+                        period="afternoon"
                         appointments={afternoonAppointments}
                         onDelete={handleDeleteAppointment}
                     />
                     <PeriodSection
-                        icon="Moon"
-                        periodName="Noite"
-                        hour="19h-21h"
+                        period="evening"
                         appointments={eveningAppointments}
                         onDelete={handleDeleteAppointment}
                     />
@@ -177,8 +208,8 @@ export default function Petshop() {
                                         <input
                                             type="text"
                                             placeholder="Helena Souza"
-                                            value={tutorName}
-                                            onChange={(event) => setTutorName(event.target.value)}
+                                            value={tutor_name}
+                                            onChange={(event) => setTutor_name(event.target.value)}
                                             required
                                         />
                                     </div>
@@ -194,8 +225,8 @@ export default function Petshop() {
                                         <input
                                             type="text"
                                             placeholder="Cheddar"
-                                            value={petName}
-                                            onChange={(event) => setPetName(event.target.value)}
+                                            value={pet_name}
+                                            onChange={(event) => setPet_name(event.target.value)}
                                             required
                                         />
                                     </div>
