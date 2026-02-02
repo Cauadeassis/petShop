@@ -3,6 +3,7 @@
 .body {
     background-color: var(--background-primary);
     min-height: 100vh;
+    min-width: 100vh;
 
     & header {
         display: inline-flex;
@@ -12,7 +13,7 @@
         background-color: #2E2C30;
         border-radius: 0 0 1.5rem 0;
 
-        @include mixins.mobile-lg {
+        @include mixins.mobile {
             width: 100%;
             justify-content: center;
             border-radius: 0;
@@ -32,11 +33,11 @@
         margin: 0 auto;
         padding: 0 5rem 5rem 5rem;
 
-        @include mixins.tablet {
+        @include mixins.mobile-and-tablet {
             padding: 0;
         }
 
-        @include mixins.mobile-lg {
+        @include mixins.mobile {
             width: 90%;
         }
 
@@ -44,12 +45,12 @@
             display: flex;
             justify-content: space-between;
 
-            @include mixins.tablet {
+            @include mixins.mobile-and-tablet {
                 flex-direction: column;
             }
 
             & .titleContainer {
-                @include mixins.tablet {
+                @include mixins.mobile-and-tablet {
                     text-align: center;
                 }
 
@@ -57,7 +58,7 @@
                     color: var(--content-primary);
                     font: var(--title);
 
-                    @include mixins.tablet {
+                    @include mixins.mobile-and-tablet {
                         margin-bottom: 1rem;
                     }
                 }
@@ -67,7 +68,7 @@
                     color: var(--content-secondary);
                     font: var(--paragraph-md);
 
-                    @include mixins.tablet {
+                    @include mixins.mobile-and-tablet {
                         margin: 0 auto;
                         font: var(--label-lg);
                     }
@@ -77,7 +78,7 @@
             & .dateContainer {
                 margin-top: 0.5rem;
 
-                @include mixins.mobile-lg {
+                @include mixins.mobile-and-tablet {
                     align-self: center;
                     margin-top: 1rem;
                 }
@@ -129,7 +130,7 @@
                 color: var(--content-primary);
                 font: var(--title);
 
-                @include mixins.tablet {
+                @include mixins.mobile-and-tablet {
                     text-align: center;
                     margin-bottom: 1rem;
                 }
@@ -139,7 +140,7 @@
                 color: var(--content-secondary);
                 font: var(--paragraph-md);
 
-                @include mixins.tablet {
+                @include mixins.mobile-and-tablet {
                     text-align: center;
                 }
             }
@@ -160,7 +161,7 @@
                     display: flex;
                     gap: 2rem;
 
-                    @include mixins.tablet {
+                    @include mixins.mobile-and-tablet {
                         flex-direction: column;
                         gap: 1rem;
                     }

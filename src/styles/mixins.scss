@@ -28,13 +28,25 @@
 }
 
 @mixin mobile-lg {
-    @media (max-width: 650px) {
+    @media (min-width: 401px) and (max-width: 650px) {
         @content;
     }
 }
 
 @mixin tablet {
+    @media (min-width: 651px) and (max-width: 768px) {
+        @content;
+    }
+}
+
+@mixin mobile-and-tablet {
     @media (max-width: 768px) {
+        @content;
+    }
+}
+
+@mixin mobile {
+    @media (max-width: 650px) {
         @content;
     }
 }

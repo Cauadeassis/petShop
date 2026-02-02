@@ -15,8 +15,8 @@ export const periodIcons = {
 
 export const periodHours = {
     morning: "9h-12h",
-    afternoon: "13-18h",
-    evening: "19h-21"
+    afternoon: "13h-18h",
+    evening: "19h-21h"
 } as const;
 
 export const periodNames = {
@@ -30,12 +30,14 @@ interface PeriodSectionProps {
     period: Period;
     appointments: Appointment[];
     onDelete: (id: string) => void;
+    isReceivingData: boolean;
 }
 
 export default function PeriodSection({
     period,
     appointments,
-    onDelete
+    onDelete,
+    isReceivingData
 }: PeriodSectionProps) {
     return (
         <section className={styles.periodSection}>
@@ -47,30 +49,39 @@ export default function PeriodSection({
                 <span className={styles.hourContainer}>{periodHours[period]}</span>
             </div>
 
-            {appointments.length > 0 ? (
-                <table>
-                    <tbody>
-                        {appointments.map((appointment) => (
-                            <tr key={appointment.id}>
-                                <td className={styles.hour}>{appointment.hour}</td>
-                                <td>
-                                    <strong>{appointment.pet_name}</strong>
-                                    <span> / {appointment.tutor_name}</span>
-                                </td>
-                                <td>{appointment.service}</td>
-                                <td>
-                                    <button onClick={() => onDelete(appointment.id)}>
-                                        Remover agendamento
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            ) : (
+            {appointments.length === 0 && (
                 <div className={styles.emptyState}>
-                    <p>Nenhum agendamento para este período</p>
+                    <p>
+                        {isReceivingData
+                            ? "Carregando..."
+                            : "Nenhum agendamento para este período"
+                        }
+                    </p>
                 </div>
+            )}
+
+            {!isReceivingData && appointments.length > 0 && (
+                <ul className={styles.appointmentList}>
+                    {appointments.map((appointment) => (
+                        <li key={appointment.id}>
+                            <span className={styles.hour}>
+                                <time dateTime={appointment.hour}>{appointment.hour}</time>
+                            </span>
+                            <div className={styles.petInfo}>
+                                <strong>{appointment.pet_name}</strong>
+                                <span> / {appointment.tutor_name}</span>
+                            </div>
+                            <span className={styles.service}>{appointment.service}</span>
+                            <button
+                                onClick={() => onDelete(appointment.id)}
+                                aria-label={`Remover agendamento de ${appointment.pet_name} às ${appointment.hour}`}
+                                className={styles.removeButton}
+                            >
+                                Remover agendamento
+                            </button>
+                        </li>
+                    ))}
+                </ul>
             )}
         </section>
     )

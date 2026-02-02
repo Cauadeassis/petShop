@@ -31,64 +31,95 @@
         }
     }
 
-    & table {
+    & ul {
         padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
 
-        @include mixins.tablet {
-            width: 100%;
+        @include mixins.mobile-and-tablet {
             margin: 0 auto;
         }
 
-        & tr {
-            display: flex;
+        @include mixins.mobile {
+            gap: 3rem;
+        }
+
+        @include mixins.tablet {
+            width: 100%;
+            gap: 2rem;
+        }
+
+        @include mixins.mobile-lg {
+            width: 50%;
+        }
+
+        @include mixins.mobile-sm {
+            width: 100%;
+        }
+
+        & li {
+            display: grid;
+            grid-template-columns: auto 1fr 1fr auto;
             align-items: center;
-            gap: 3.1rem;
+            gap: 2rem;
 
             @include mixins.tablet {
-                width: 100%;
-                flex-direction: column;
-                justify-content: center;
-                gap: 2rem;
+                gap: 4rem;
             }
 
-            & td {
+            @include mixins.mobile {
+                display: flex;
+                flex-direction: column;
                 text-align: center;
-                color: var(--content-secondary);
-                font: var(--paragraph-sm);
-
-                @include mixins.tablet {
-                    width: 100%;
-                    font-size: var(--text-xl);
-                    line-height: var(--line-height-md);
-                }
             }
 
             & .hour {
                 color: var(--content-primary);
                 font: var(--label-md);
+                grid-column: 1;
 
-                @include mixins.tablet {
+                @include mixins.mobile {
                     font-size: var(--text-xxl);
                 }
             }
 
+            & .petInfo {
+                grid-column: 2;
+
+                & strong {
+                    color: var(--content-primary);
+                    font: var(--paragraph-sm);
+                    font-weight: var(--weight-md);
+                }
+
+                & span {
+                    color: var(--content-secondary);
+                    font: var(--paragraph-sm);
+                }
+            }
+
+            & .service {
+                grid-column: 3;
+                color: var(--content-secondary);
+                font: var(--paragraph-sm);
+            }
+
             & button {
+                grid-column: 4;
                 background-color: transparent;
                 border: none;
                 cursor: pointer;
                 color: var(--content-tertiary);
                 transition: 0.5s;
+                text-align: right;
+                white-space: nowrap;
 
                 &:hover {
                     color: var(--content-primary);
                     text-decoration: underline;
                     transform: scale(1.03);
                 }
-            }
-
-            & strong {
-                color: var(--content-primary);
-                font-weight: var(--weight-md);
             }
         }
     }

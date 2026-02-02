@@ -25,6 +25,7 @@ export default function Petshop() {
     const [date, setDate] = useState<Date>(today);
     const [hour, setHour] = useState("");
     const [isScheduling, setIsScheduling] = useState(false);
+    const [isReceivingData, setIsReceivingData] = useState(true);
     const popoverRef = useRef<HTMLDivElement>(null);
 
     const [tutor_name, setTutor_name] = useState("");
@@ -111,6 +112,7 @@ export default function Petshop() {
 
     useEffect(() => {
         async function fetchAppointmentsByDate() {
+            setIsReceivingData(true)
             const formattedDate = format(date, "yyyy-MM-dd");
             const { data, error } = await supabase
                 .from("appointments")
@@ -119,6 +121,7 @@ export default function Petshop() {
 
             if (error) {
                 console.error("Erro ao buscar appointments:", error);
+                setIsReceivingData(false)
                 return;
             }
 
@@ -139,6 +142,8 @@ export default function Petshop() {
             setMorningAppointments(periodMap.morning);
             setAfternoonAppointments(periodMap.afternoon);
             setEveningAppointments(periodMap.evening);
+
+            setIsReceivingData(false);
         }
 
         fetchAppointmentsByDate();
@@ -177,16 +182,19 @@ export default function Petshop() {
                         period="morning"
                         appointments={morningAppointments}
                         onDelete={handleDeleteAppointment}
+                        isReceivingData={isReceivingData}
                     />
                     <PeriodSection
                         period="afternoon"
                         appointments={afternoonAppointments}
                         onDelete={handleDeleteAppointment}
+                        isReceivingData={isReceivingData}
                     />
                     <PeriodSection
                         period="evening"
                         appointments={eveningAppointments}
                         onDelete={handleDeleteAppointment}
+                        isReceivingData={isReceivingData}
                     />
                 </div>
                 <button
