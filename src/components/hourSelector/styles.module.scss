@@ -1,7 +1,7 @@
-@import "../../styles/mixins";
+@use "../../styles/mixins";
 
 .selectWrapper {
-    @include inputWrapper;
+    @include mixins.inputWrapper;
 
     & .inputIcon:nth-of-type(1) {
         left: 0.75rem;
